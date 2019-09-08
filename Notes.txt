@@ -1,0 +1,550 @@
+from Sumit (Faculty) to All Participants:
+https://db-engines.com/en/ranking
+
+--Mongo DB
+from Sumit (Faculty) to All Participants:
+https://www.youtube.com/watch?v=irErCj6QDMg
+
+--Graph DB
+from Sumit (Faculty) to All Participants:
+https://www.youtube.com/watch?v=41qdmKIIMz0
+
+from Sumit (Faculty) to All Participants:
+https://www.youtube.com/watch?v=589zf0y4cqY
+
+--CAP Theorem
+from Sumit (Faculty) to All Participants:
+https://www.youtube.com/watch?v=k1dtA14EYrk
+
+--Horizontal scaling:
+from Sumit (Faculty) to All Participants:
+https://www.youtube.com/watch?v=irErCj6QDMg
+
+--mongo db downliad issue:
+from Sumit (Faculty) to All Participants:
+https://www.mongodb.com/download-center/community
+
+from Sumit (Faculty) to All Participants:
+Download latest MongoDB build for Windows/Linux from: https://www.mongodb.com/download-center#community
+
+First shell-- 
+cd C:\Program Files\MongoDB\Server\3.4\bin\-- 
+mkdir F:\Softwares\mongoDBDatabase (Your personal computer path)
+mongod.exe --port 27017 --dbpath F:\Softwares\mongoDBDatabase --rest --journal  // --replSet (Personal database path) 
+
+Second shell-- cd C:\Program Files\MongoDB\Server\3.4\bin\-- mongo.exe
+
+from Sumit (Faculty) to All Participants:
+https://docs.mongodb.com/manual/crud/
+
+--==============================
+session 3
+--==============================
+db.courses.insert({"name":"Simplilearn","address":"10685 Hazelhurst Dr,Houston","courses":["big data","android"]});
+db.courses.find({"name":"Simplilearn"});
+
+--== Ordered Bulk Insert
+> var bulk = db.items.initializeOrderedBulkOp();	----// returns the Ordered bulk insert Builder	
+> bulk.insert({_id:1,item:"pen",available:true,soldQty:700});
+> bulk.insert({_id:2,item:"pencil",available:false,soldQty:900});
+> bulk.insert({_id:3,item:"books",available:true,soldQty:600});
+> bulk.execute();
+
+if say 3rd insert fail. Mongodb will not allow the operation to be executed again due to duplicate key error.
+change the key value (_id) and retry the 
+bulk.insert()
+
+--== Unordered
+> var bulk = db.items.initializeUnorderedBulkOp();	----// initialize bulk operations Builder, which maintains a list of operations to perform
+> bulk.insert({item:"pen",available:true,soldQty:700});
+> bulk.insert({item:"pencil",available:false,soldQty:900});
+> bulk.insert({item:"books",available:true,soldQty:600});
+> bulk.execute();
+> use augbatch;
+
+check: db.items.find()
+
+--== Fetch
+
+> db.items.find({"age":35})
+> db.items.find().limit(5);
+> db.items.findOne();
+> db.items.find().pretty();
+> db.items.find({});
+> db.items.find({name:"Sumit"});
+
+> db.items.find({name:"Sumit",age:33});	----## AND condition
+> db.items.find({available:{$in:[true,false]}}); ----## IN
+> db.items.find({$or:[{soldQty:{$gt:500}},{available:true}]}); ----## OR Condition (better use IN Condition than OR)
+> db.items.find({available:true,$or:{[{soldQty:{$lt:500}},{item:"book"}]}})
+
+_id divided by 4 will not have any remainder:
+> db.items.find({"_id":{"$not":{"$mod":[4,1]}}})
+
+> db.items.find({available:true, soldQty:{$lt:900}});
+> db.items.find({$or:[{soldQty:{$gt:500}},{available:true}]});  ----##OR Condition
+
+eg:
+db.items.find({available:true, soldQty:{$lt:900},soldQty:{$gt:500}});
+
+> db.items.find({available:true,$or:[{soldQty:{$gt:200}},{item:"Book"}]}); ---## and and OR
+
+> db.items.find({"_id":{"$not":{"$mod":[4,1]}}});
+
+--Regular Expression
+> db.items.find({item:/Pen?/i});	-- Any variation of "pen"
+> db.items.find({item:/pe/i});	--All the items whose value starts with "pe"--"i": case insensitive
+
+--==Array Exact match
+> db.items.find({country_codes:5}); ----Array having one of its elements as 5
+> db.items.find({'country_codes.0':5}) ----Array having its 1st element as 5
+
+--==Array projection operators
+1--> $slice
+> db.items.find({_id:5},{country_codes:{$slice:2}})	----retrives 1st 2 elements of the array element in the document
+2--> $elemMatch
+> db.items.find({country_codes:{$elemMatch:{$gte:3,$lte:6}}})
+
+$elemMatch, $slice, $(projection operator) ---- used to return a subset of elements for an array key
+> db.items.find({item:"pencil"},{country_codes:{$slice:3}})
+> db.items.find({item:"pencil"},{country_codes:{$elemMatch:{$gte:3,$lte:5}}})
+
+--==Positional Array
+
+db.items.insert({name:"Sumit",country_codes:[1,2,3,4,5]});
+db.items.find({country_codes:5});		--Array Element Search
+db.items.find({'country_codes.0':1});		--Positional Array Search
+
+--==$Where clause
+
+> db.foo.insert({"apple":8,"spinach":4,"watermelon":4});
+> db.foo.find({"$where":function(){
+... for(var current in this){
+... for(var other in this){
+... if(current != other && this[current]==this[other]){
+... return true;
+... }}}
+... return false;
+... }});
+> db.foo.find({"$where":"this.x+this.y==10"});
+> db.foo.find({"$where":"function(){return this.x+this.y==10;}"});
+
+--== CURSOR
+> var cursor = db.items.find();
+> cursor.forEach(function(x){
+... print(x.name);
+... });
+> db.items.find().skip(3);
+> db.items.find().sort({username:1,age:-1});
+
+--------------
+> var cursor=db.items.find()
+> while (cursor.hasNext()){
+... obj=cursor.next();
+... print(obj.name);
+... print(obj.soldQty);
+};
+--------------
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+Pagination
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+Page1:
+db.items.find().limit(25).sort({price:1})
+Page2:
+db.items.find().limit(25).skip(25).sort({price:1})
+
+This causes the performance to slow down
+---
+Avoiding larger skips to improve performance:
+
+var page1=db.foo.find().sort({date:-1}).limit(100)
+
+--
+var latest=null
+//display 1st page
+while(page1.hasNext()){
+... latest=page1.next();
+... display(latest);
+}
+//get next page
+var page2=db.foo.find({date:{$gte:latest.date}});
+page2.sort({date:-1}).limit(100);
+
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+
+--== Skip
+db.items.find().skip(3)
+
+--== limit
+db.items.find().limit(2)
+
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+
+--== Update
+
+1. use update operators
+> db.products.find();
+> db.products.update({item:"envelopes"},{$set:{category:"NoSQL"}},{multi:true});
+
+2. update embedded doc
+db.items.update({"item":"pen"},{$set:{"details.model":"14QT"}})
+
+3. Update Multiple documents
+db.items.update({item:"pen"},{$set:{"details.model":"14QT"}},{multi:true})
+
+--== $inc
+db.items.update({"item":"pencil"},{$inc:{"soldQty":1}})
+
+--== $unset
+db.items.update({"soldQty":{$gt:700}},{$unset:{"soldQty":1000}},{multi:true})
+
+
+--== Replacing existing doc with new doc: {upsert:true}
+> db.items.find({item:"eraser"})
+> db.items.update({item:"eraser"},{"item":"eraser","soldQty":500},{upsert:true})
+
+
+--== Add element to end of array field:
+Or $addToSet to avoid duplicates(eg: email_id)
+> db.items.update({"item":"pencil"},{$push:{"ingredients":{"wood":"california cedar","graphite":"mixture of natural and cedar"}}})
+
+
+--== Positional Array Modification
+1. by position
+db.blog.update({"post":"post_id"},{$inc:{"comments.0.votes":1}})
+
+2. by positional operator $
+db.blog.update({"comments.author":"Pratik"},{$set:{"comments.$.author":"Jim"}})
+{multi:true}
+
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+--== Remove Documents:
+> db.items.remove({"items":"bag"},1)	-- removes only 1 doc out of many that matched
+> db.items.remove({})
+
+> db.items.drop() ---- dropping collection
+
+
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+Indexes
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+
+--== Getting index Size:
+db.items.totalIndexSize()
+db.items.getIndexes()
+
+--== Indexes-- Single Field
+db.items.createIndex({"name":1});
+db.items.getIndexes();
+db.items.createIndex({"name":-1});
+
+--== Indexes-- Array Field(Embedded Documents)
+db.items.insert({"item":"book","availble":true,"details":{"ISDN":"1234","publisher":"XYZ company"},"onlineSale":true});
+db.items.createIndex({"details.ISDN":1});
+
+--== Indexes-- CompoundIndex
+ db.items.createIndex({"item":1,"onlineSale":-1});
+
+--== Indexes on Array field -- Multi-Key Index
+--Note: indexes on shard key and hashed key can not be multi key index
+db.items.createIndex({"country_codes":1});
+
+--== Compound Multi-Key Index (single field + array Field)
+db.items.createIndex({"name":1,"country_codes":-1});
+
+--== Hashed Index
+db.items.createIndex({"name":"hashed"});
+
+--== TTL Index
+db.items.createIndex({"onlineSale":1},{expireAfterSeconds:3600});
+
+--== Unique Index
+db.items.insert({"unique":"skdfsldksfkjnskfd"});
+db.items.createIndex({"unique":1},{unique:true});
+
+--== Sparse Index
+db.items.insert({"sparse":true});
+db.items.createIndex({"sparse":1},{sparse:true});
+
+--== Text Index
+db.items.createIndex({"subject":"text","content":"text"});
+db.items.createIndex({"$**":"text"},{"name":"TextIndex"});
+
+db.text.insert({"language":"spanish"});
+db.text.createIndex({"language":"text"},{default_language:"spanish"});
+
+--== Background
+db.text.insert({"background":"process"});
+db.text.createIndex({"background":1},{background:true});
+
+--== Replica Set
+db.products.createIndex({item:1,quantity:-1},{name:"inventory"});
+
+--== Drop Index
+db.products.dropIndex({item:1,quantity:-1});
+db.products.dropIndexes();	-- removes all indexes
+
+--== Modifying Index
+db.items.dropIndex({"name":1});
+db.items.createIndex({"name":-1});
+
+--== rebuild Indexes
+db.currentOp();
+db.killOp();
+db.items.reIndex();
+
+--== Getting indexes across collections
+db.getCollectionNames().forEach(function(collection){ 
+... indexes = db[collection].getIndexes(); 
+... print("Indexes for " + collection + ":"); 
+... printjson(indexes); 
+... });
+
+--== Query Plan
+db.items.find({"name":"Sumit"}).explain();
+
+db.items.find({"item":"book",availble:true}).hint({"item":1});
+db.items.find({"item":"book",availble:true}).hint({"item":1}).explain();
+
+--== Status 
+db.serverStatus();
+db.items.stats();
+db.stats();
+
+--== Geospatial Index
+db.places.insert({"location" : { "type" : "Point", "coordinates" : [ -78.97, 40.77 ] }, "name" : "Cubbon Park", "category" : "Parks" });
+db.places.createIndex({"location":"2dsphere"});
+
+--== TTl Index
+db.ttl.insert({"lastModifiedDate": new Date(),"name":"sumit"});
+db.ttl.createIndex({"lastModifiedDate":1},{expireAfterSeconds:5});
+db.ttl.getIndexes();
+
+
+--== Aggregation
+db.zipcodes.aggregate([{$group:{_id:"$state",totalPop:{$sum:"$pop"}}},{$match:{totalPop:{$gte:10*1000*1000}}}]);
+
+db.users.insert({"joined": new Date(),"name":"Sumit"});
+db.users.aggregate([{$project:{month_joined:{$month:"$joined"},name:"$_id",_id:0}},{$sort:{month_joined:1}}]);
+
+--== MapReduce
+db.customer_info.insert({"customer_name":"Sumit","amount":10000});
+db.customer_info.insert({"customer_name":"Dilip","amount":20000});
+var mapFunction = function(){emit(this.customer_name,this.amount)};
+var reduceFunction = function(customer_name,arrayOfAmounts){
+... return Array.sum(arrayOfAmounts);
+}
+db.customer_info.mapReduce(mapFunction,reduceFunction,{out:"mapReduce_result"});
+db.mapReduce_result.find();
+
+--== Aggregations more
+db.customer_info.insert({"customer_name":"Sumit","amount":30000});
+db.customer_info.insert({"customer_name":"Sumit","amount":20000});
+db.customer_info.insert({"customer_name":"Sumit","amount":10000});
+db.customer_info.group({key:{"customer_name":1},cond:{"customer_name":"Sumit"},reduce:function(curr,result){result.amount +=curr.amount;},initial:{amount:0}});
+
+--== Replica set
+3 different shells:
+mongod.exe --port 27017 --dbpath F:\Softwares\MongoData1 --replSet rs1 --smallfiles --oplogSize 128
+mongod.exe --port 27018 --dbpath F:\Softwares\MongoData2 --replSet rs1 --smallfiles --oplogSize 128
+
+new Shell: connect to port no 27017
+mongo --port 27017
+
+> rsconf={
+... _id:"rs1",
+... members:[
+... {_id:0, host:"localhost:27017" },
+... {_id:1, host:"localhost:27018" }
+... ] }
+
+> rs1.initiate(rsconf);
+
+check:
+rs.conf();
+
+--== Replication and Local DB
+rs.status();
+rs.printReplicationInfo();
+db.printSlaveReplicationInfo();
+rs.slaveOk();
+db.isMaster();
+
+
+--== Sharded Mode:
+mkdir C:\data\configdb1
+mkdir C:\data\configdb2
+mkdir C:\data\configdb3
+
+Start Config Server:
+mongod --configsvr --dbpath C:\data\configdb1 --port 27020
+mongod --configsvr --dbpath C:\data\configdb2 --port 27021
+mongod --configsvr --dbpath C:\data\configdb3 --port 27022
+
+Connect to configServer:
+mongos --configdb localhost:27020,localhost:27021,localhost:27022
+
+Connect to mongo shell on the port u want to:
+mongo --host localhost --port 27020
+sh.help();
+
+enable sharding on test database:
+sh.enableSharding("test");
+
+enable sharding on collection:
+sh.shardCollection("test.items",{item:1});
+
+
+--== Sample Solutions:
+https://drive.google.com/drive/u/1/folders/1AiAjChdj5KMV54IkVtpxIhtWpdPIgqRS
+https://drive.google.com/open?id=1G1MFMg3UUGA3oU_bZ7Cihf75PjAq1lp9
+
+--== Insert JSON in MongoDB
+mongoimport --db test --collection docs --file example2.json
+
+https://stackoverflow.com/questions/19441228/insert-json-file-into-mongodb
+https://www.java.com/en/download/
+https://www.eclipse.org/downloads/packages/release/neon/3/eclipse-ide-java-ee-developers
+
+--== Maven repository (all same versions)
+mongodb-driver-core:
+https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-core/3.11.0
+
+mongodb-driver:
+https://mvnrepository.com/artifact/org.mongodb/mongodb-driver/3.11.0
+
+BSON Jar:
+https://mvnrepository.com/artifact/org.mongodb/bson/3.11.0
+
+Procedure to install:
+from Sumit (Faculty) to All Participants:
+-- Download JDK 1.8 (Version that you prefer) for Windows/Linux
+-- Install Eclipse
+-- Create a project in eclipse
+-- Create a simple Java Class in eclipse
+-- Use the code below to upload an image file
+-- Get these dependencies and add it to the java classes build path
+mongodb-driver-core-3.11.0.jar
+mongodb-driver-3.11.0.jar
+bson-3.11.0.jar
+
+few questions regarding project:
+
+Que: for projects 3 and 4, it says "Access the folder "Projects."" which is the Projects folder exaclty
+Que: In project 1, we are asked to interact with sharded system and the IDE is provided. Do we set up mongod in local machines in sharded mode? If yes, what is the use of IDE exactly?
+Que: In project 2, we are asked to use "supervisord daemon". What is that exaclty. Here also IDE is provided. What is the use of it? Do we set up the system in IDE? Then how do we access it?
+
+--=====Session 6=====--
+--===================--
+
+--==Capped Collections
+db.createCollection("serverlog",{capped:true,size:100000});
+db.serverlog.isCapped();
+db.createCollection("serverlogmax",{capped:true,size:5242880,max:5000});
+db.serverlogmax.isCapped();
+
+--== CRUD on capped collections
+
+db.serverlog.insert({"name":"sumit","age":33});
+db.serverlog.insert({"name":"dilip","age":33});
+db.serverlog.find();
+db.serverlog.find.sort({$natural:-1});
+db.convertToCapped.insert({"name":"capped"});
+db.runCommand({"convertToCapped":"convertToCapped",size:100000});
+
+--== TTL Index
+db.log_events.insert({"createdAt": new Date()});
+db.log_events.createIndex({"createdAt":1},{expireAfterSeconds:60});
+db.log_events.find();
+
+--== GridFS
+java -version
+
+Create a project File->Create Java Project
+Inside the src folder in your new projects right click and create a new package named com.mongodb.gridfs
+
+************************************
+************************************
+package com.mongodb.gribfs;
+import java.io.File;
+import java.io.IOException;
+import com.mongodb.DB;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
+public class UploadFile {
+    public static void main(String[] args) throws IOException {
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        DB db = mongoClient.getDB("sample");
+        String newFileName = "gridFS-java-image";
+        File imageFile = new File("C:\\Users\\DELL\\Pictures\\Technology Stack of Vaniday.png");
+        // create a "photo" namespace
+        GridFS gfsPhoto = new GridFS(db, "photo");
+        // get image from local drive
+        GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
+        // set the new file name for identity
+        gfsFile.setFilename(newFileName);
+        // save the image file to mongoDB
+        gfsFile.save();
+        // print the result
+        DBCursor cursor = gfsPhoto.getFileList();
+		while (cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
+        // get the image file by it's filename
+        GridFSDBFile imageForOutput = gfsPhoto.findOne(newFileName);
+        // save it to a new image file
+        imageForOutput.writeTo("C:\\Users\\DELL\\Pictures\\FromMongoDB.png");
+        System.out.println("Done");
+        // Remove the file.
+        gfsPhoto.remove(gfsPhoto.findOne(newFileName));
+        // close the connection
+        mongoClient.close();
+    }
+}
+
+************************************
+************************************
+
+--== Java Prog Practice
+right click on src folder and create package named com.mongodb.insert
+right click on the package and create a class with name InsertDocuments
+
+--==
+right click on src folder and create package named com.mongodb.update
+right click on the package and create a class with name UpdateDocument
+
+--==
+right click on src folder and create a package name com.mongodb.retrieve
+create class named RetrieveDocuments
+
+--==
+right click on src and create package com.mongodb.delete
+right click on package and create class DeleteDocument
+
+--==
+
+************************************
+Administration of MongoDB
+************************************
+navigate to your bin folder -> mongostat
+navigate to your bin folder -> mongotop
+
+OR
+
+start mongo shell
+db.serverStatus();
+db.stats();
+db.items.stats();
+
+
+--== Project 3
+
+https://drive.google.com/drive/folders/1-4JBjHYAxsJyXl89O6yTYgUF01U3bS1i
+
+crudOperations
+EmployeeCRUDOperations
+
+vatan.jaiswal@gmail.com

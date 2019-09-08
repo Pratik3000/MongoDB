@@ -1,0 +1,161 @@
+*****************************************************************************************
+UploadFiles.java
+*****************************************************************************************
+
+package com.mongodb.gribfs;
+import java.io.File;
+import java.io.IOException;
+import com.mongodb.DB;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
+public class UploadFile {
+    public static void main(String[] args) throws IOException {
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        DB db = mongoClient.getDB("sample");
+        String newFileName = "gridFS-java-image";
+        File imageFile = new File("C:\\Users\\DELL\\Pictures\\Technology Stack of Vaniday.png");
+        // create a "photo" namespace
+        GridFS gfsPhoto = new GridFS(db, "photo");
+        // get image from local drive
+        GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
+        // set the new file name for identity
+        gfsFile.setFilename(newFileName);
+        // save the image file to mongoDB
+        gfsFile.save();
+        // print the result
+        DBCursor cursor = gfsPhoto.getFileList();
+		while (cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
+        // get the image file by it's filename
+        GridFSDBFile imageForOutput = gfsPhoto.findOne(newFileName);
+        // save it to a new image file
+        imageForOutput.writeTo("C:\\Users\\DELL\\Pictures\\FromMongoDB.png");
+        System.out.println("Done");
+        // Remove the file.
+        gfsPhoto.remove(gfsPhoto.findOne(newFileName));
+        // close the connection
+        mongoClient.close();
+    }
+}
+
+*****************************************************************************************
+InsertDocumnts.java
+*****************************************************************************************
+
+package com.mongodb.insert;
+import org.bson.Document;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+public class InsertDocuments {
+    public static void main(String[] args) {
+        // To connect to the mongoDB server
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        // Now connect to your database
+        MongoDatabase db = mongoClient.getDatabase("test");
+        System.out.println("Connection to the database successful.");
+        MongoCollection<Document> collection = db.getCollection("java_item");
+        System.out.println("Collection item selected successfully.");
+        Document document = new Document("title", "MongoDB").append("description", "database").append("likes", 100);
+        collection.insertOne(document);
+        System.out.println("Document inserted successfully.");
+        mongoClient.close();
+    }
+}
+
+*****************************************************************************************
+UpdateDocument.java
+*****************************************************************************************
+package com.mongodb.update;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+public class UpdateDocument {
+    public static void main(String[] args) {
+        // To connect to the mongoDB server
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        // Now connect to your database
+        DB db = mongoClient.getDB("test");
+        System.out.println("Connection to the database successful.");
+        DBCollection collection = db.getCollection("java_item");
+        System.out.println("Collection items selected successfully.");
+        BasicDBObject updateDocument = new BasicDBObject();
+        updateDocument.append("$set", new BasicDBObject().append("likes", 200));
+        BasicDBObject query = new BasicDBObject().append("title", "MongoDB");
+        collection.update(query, updateDocument, false, true);
+        System.out.println("Document updated successfully.");
+        mongoClient.close();
+    }
+}
+
+*****************************************************************************************
+RetriveDocuments.java
+*****************************************************************************************
+package com.mongodb.retrieve;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCursor;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+public class RetrieveDocuments {
+    public static void main(String[] args) {
+        // To connect to the mongoDB server
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        // Now connect to your database
+        DB db = mongoClient.getDB("test");
+        System.out.println("Connection to the database successful.");
+        DBCollection collection = db.getCollection("items");
+        System.out.println("Collection items selected successfully.");
+        BasicDBObject query = new BasicDBObject().append("item", "pen");
+        DBCursor cursor = collection.find(query);
+        int index = 1;
+        while (cursor.hasNext()) {
+            System.out.println("Retrieved document: " + index);
+            System.out.println(cursor.next());
+            index++;
+        }
+        System.out.println("Documents retrieved successfully.");
+        mongoClient.close();
+    }
+}
+
+
+*****************************************************************************************
+DeleteDocument.java
+*****************************************************************************************
+package com.mongodb.delete;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
+public class DeleteDocument {
+    public static void main(String[] args) throws InterruptedException {
+        // To connect to the mongoDB server
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        // Now connect to your database
+        DB db = mongoClient.getDB("test");
+        System.out.println("Connection to the database successful.");
+        DBCollection collection = db.getCollection("java_item");
+        System.out.println("Collection items selected successfully.");
+        BasicDBObject searchQuery = new BasicDBObject().append("title", "MongoDB");
+        collection.remove(searchQuery);
+        DBCursor cursor = collection.find();
+        int index = 1;
+        while (cursor.hasNext()) {
+            System.out.println("Inserted document: " + index);
+            System.out.println(cursor.next());
+            index++;
+        }
+        System.out.println("Documents retrieved successfully.");
+        mongoClient.close();
+    }
+}
+
+*****************************************************************************************
+*****************************************************************************************

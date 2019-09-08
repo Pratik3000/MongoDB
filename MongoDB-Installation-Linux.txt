@@ -1,0 +1,43 @@
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+Installing mongodb
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+
+Step1:
+Download the Linux version of MongoDB using
+culr -O http://downloads.mongodb.org/linux/mongodb-linux-x86_64-3.0.3.tgz
+
+Step2: untar it
+tar -zxvf mongodb-linux-x86_64-3.0.3.tgz
+
+Step3: create a directory
+mkdir -p /mongodb
+
+Step4:copy the untared directory by executing follwing command
+cp -R -n mongodb-linux-x86_64-3.0.3 /mongodb
+
+Step5: add mongo db installation path in .bashrc file to execure mongo db from anywhere
+vi /root/.bahrc
+
+-- Add the follwoing path to .bashrc file where JAVA_HOME is already set up
+export MONGODB_HOME= /mongodb/mongodb-linux-x86_64-3.0.3
+export PATH=$PATH:$MONGODB_HOME/bin
+
+-- reload envt variable
+source /root/.bashrc
+
+--check if the path is set
+echo $MONGODB_HOME
+
+
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+Starting mongodb
+--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+
+Shell 1: Starting mongod Server
+mongod
+
+Shell 2: Starting mongo shell
+mongo
+Check:
+> db.items.insert({"name":"Pratik","Age":27})
+> db.items.find()
