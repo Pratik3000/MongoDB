@@ -26,13 +26,19 @@ https://www.mongodb.com/download-center/community
 
 from Sumit (Faculty) to All Participants:
 Download latest MongoDB build for Windows/Linux from: https://www.mongodb.com/download-center#community
-
-First shell-- 
-cd C:\Program Files\MongoDB\Server\3.4\bin\-- 
-mkdir F:\Softwares\mongoDBDatabase (Your personal computer path)
-mongod.exe --port 27017 --dbpath F:\Softwares\mongoDBDatabase --rest --journal  // --replSet (Personal database path) 
 
-Second shell-- cd C:\Program Files\MongoDB\Server\3.4\bin\-- mongo.exe
+
+First shell
+-- 
+cd C:\Program Files\MongoDB\Server\3.4\bin\
+-- 
+mkdir F:\Softwares\mongoDBDatabase (Your personal computer path)
+mongod.exe --port 27017 --dbpath F:\Softwares\mongoDBDatabase --rest --journal  // --replSet (Personal database path) 
+
+
+Second shell
+-- cd C:\Program Files\MongoDB\Server\3.4\bin\
+-- mongo.exe
 
 from Sumit (Faculty) to All Participants:
 https://docs.mongodb.com/manual/crud/
@@ -44,11 +50,15 @@ db.courses.insert({"name":"Simplilearn","address":"10685 Hazelhurst Dr,Houston",
 db.courses.find({"name":"Simplilearn"});
 
 --== Ordered Bulk Insert
-> var bulk = db.items.initializeOrderedBulkOp();	----// returns the Ordered bulk insert Builder	
+> var bulk = db.items.initializeOrderedBulkOp();	----// returns the Ordered bulk insert Builder	
+
 > bulk.insert({_id:1,item:"pen",available:true,soldQty:700});
-> bulk.insert({_id:2,item:"pencil",available:false,soldQty:900});
+
+> bulk.insert({_id:2,item:"pencil",available:false,soldQty:900});
+
 > bulk.insert({_id:3,item:"books",available:true,soldQty:600});
-> bulk.execute();
+
+> bulk.execute();
 
 if say 3rd insert fail. Mongodb will not allow the operation to be executed again due to duplicate key error.
 change the key value (_id) and retry the 
@@ -56,9 +66,13 @@ bulk.insert()
 
 --== Unordered
 > var bulk = db.items.initializeUnorderedBulkOp();	----// initialize bulk operations Builder, which maintains a list of operations to perform
-> bulk.insert({item:"pen",available:true,soldQty:700});
+
+> bulk.insert({item:"pen",available:true,soldQty:700});
+
 > bulk.insert({item:"pencil",available:false,soldQty:900});
-> bulk.insert({item:"books",available:true,soldQty:600});
+
+> bulk.insert({item:"books",available:true,soldQty:600});
+
 > bulk.execute();
 > use augbatch;
 
@@ -119,21 +133,31 @@ db.items.find({'country_codes.0':1});		--Positional Array Search
 
 > db.foo.insert({"apple":8,"spinach":4,"watermelon":4});
 > db.foo.find({"$where":function(){
-... for(var current in this){
-... for(var other in this){
-... if(current != other && this[current]==this[other]){
-... return true;
+
+... for(var current in this){
+
+... for(var other in this){
+
+... if(current != other && this[current]==this[other]){
+
+... return true;
+
 ... }}}
-... return false;
-... }});
+
+... return false;
+
+... }});
 > db.foo.find({"$where":"this.x+this.y==10"});
 > db.foo.find({"$where":"function(){return this.x+this.y==10;}"});
 
 --== CURSOR
 > var cursor = db.items.find();
-> cursor.forEach(function(x){
-... print(x.name);
-... });
+
+> cursor.forEach(function(x){
+
+... print(x.name);
+
+... });
 > db.items.find().skip(3);
 > db.items.find().sort({username:1,age:-1});
 
@@ -332,7 +356,8 @@ db.customer_info.insert({"customer_name":"Sumit","amount":10000});
 db.customer_info.insert({"customer_name":"Dilip","amount":20000});
 var mapFunction = function(){emit(this.customer_name,this.amount)};
 var reduceFunction = function(customer_name,arrayOfAmounts){
-... return Array.sum(arrayOfAmounts);
+
+... return Array.sum(arrayOfAmounts);
 }
 db.customer_info.mapReduce(mapFunction,reduceFunction,{out:"mapReduce_result"});
 db.mapReduce_result.find();
@@ -345,8 +370,10 @@ db.customer_info.group({key:{"customer_name":1},cond:{"customer_name":"Sumit"},r
 
 --== Replica set
 3 different shells:
-mongod.exe --port 27017 --dbpath F:\Softwares\MongoData1 --replSet rs1 --smallfiles --oplogSize 128
-mongod.exe --port 27018 --dbpath F:\Softwares\MongoData2 --replSet rs1 --smallfiles --oplogSize 128
+mongod.exe --port 27017 --dbpath F:\Softwares\MongoData1 --replSet rs1 --smallfiles --oplogSize 128
+
+mongod.exe --port 27018 --dbpath F:\Softwares\MongoData2 --replSet rs1 --smallfiles --oplogSize 128
+
 
 new Shell: connect to port no 27017
 mongo --port 27017
@@ -540,11 +567,5 @@ db.stats();
 db.items.stats();
 
 
---== Project 3
 
-https://drive.google.com/drive/folders/1-4JBjHYAxsJyXl89O6yTYgUF01U3bS1i
 
-crudOperations
-EmployeeCRUDOperations
-
-vatan.jaiswal@gmail.com
